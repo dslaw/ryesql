@@ -46,6 +46,9 @@ split_queries <- function(lines) {
 }
 
 #' Check if the line contains a query name.
+#'
+#' @param string Character string giving the query name.
+#' @return bool
 is_name <- function(string) {
     name_pattern <- stringr::str_c(comment_, "\\s*", name_tag, ".+?")
     stringr::str_detect(string, stringr::regex(name_pattern))
@@ -113,22 +116,26 @@ query_type <- function(query_name) {
 }
 
 #' Check if the query contains parameters.
+#'
+#' @param sql Character string.
+#' @return bool
 is_prepared <- function(sql) {
     # Remove comments to avoid false positives.
-    line_comment <- stringr::regex("--.*$")
-    block_comment <- stringr::regex("/\\*.*\\*/", multiline = TRUE)
-    # Vectorize over `sql`.
+    line_comment <- stringr::regex("--.*$", multiline = TRUE)
+    block_comment <- stringr::regex("/\\*.*\\*/", dotall = TRUE)
     stripped <- rm_pattern(rm_pattern(sql, block_comment), line_comment)
 
-    detected_params <- stringr::str_detect(stripped, parameter)
-    detected_placeholders <- stringr::str_detect(stripped, placeholder)
-    any(c(detected_params, detected_placeholders))
+    detected <- stringr::str_detect(stripped, c(parameter, placeholder))
+    any(detected)
 }
 
 #' Parse a docstring with name and sql block.
+#'
+#' @param block Character vector.
+#' @return Named query.
 parse_named_query <- function(block) {
-    first <- head(block, n = 1L)
-    rest <- tail(block, n = -1L)
+    first <- utils::head(block, n = 1L)
+    rest <- utils::tail(block, n = -1L)
 
     if (!is_name(first)) {
         msg <- paste0("Query must have a ", "'", name_tag, "'", " tag in the first line")
@@ -148,6 +155,9 @@ parse_named_query <- function(block) {
 }
 
 #' Parse a docstring and sql block.
+#'
+#' @param block Character vector.
+#' @return Query.
 parse_anon_query <- function(block) {
     query <- list()
     class(query) <- c("query", class(query))

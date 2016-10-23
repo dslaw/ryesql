@@ -132,28 +132,34 @@ test_that("query_type identifies query from name", {
 })
 
 test_that("is_prepared identifies parameterized queries", {
+    # `is_prepared` takes sql as a string, not vector of lines.
+
     # Named parameter.
     sql <- c("SELECT *",
              "FROM tbl",
              "WHERE id > :i;")
+    sql <- paste0(sql, collapse = "\n")
     expect_true(is_prepared(sql))
 
     # Snake case.
     sql <- c("SELECT *",
              "FROM tbl",
              "WHERE id > :foo_bar;")
+    sql <- paste0(sql, collapse = "\n")
     expect_true(is_prepared(sql))
 
     # Anonymous parameter/placeholder.
     sql <- c("SELECT *",
              "FROM tbl",
              "WHERE id > ?;")
+    sql <- paste0(sql, collapse = "\n")
     expect_true(is_prepared(sql))
 
     # No parameter.
     sql <- c("SELECT *",
              "FROM tbl",
              "WHERE id > 4;")
+    sql <- paste0(sql, collapse = "\n")
     expect_false(is_prepared(sql))
 
     # Parameter in comment.
@@ -161,11 +167,22 @@ test_that("is_prepared identifies parameterized queries", {
              "FROM tbl",
              "-- should use placeholder eg ?",
              "WHERE id > 10;")
+    sql <- paste0(sql, collapse = "\n")
     expect_false(is_prepared(sql))
 
     sql <- c("SELECT *",
              "FROM tbl",
              "WHERE id > 10; /* ignore :i */")
+    sql <- paste0(sql, collapse = "\n")
+    expect_false(is_prepared(sql))
+
+    sql <- c("SELECT *",
+             "FROM tbl",
+             "/* date:",
+             " * why is this 10?",
+             " */",
+             "WHERE id > 10;")
+    sql <- paste0(sql, collapse = "\n")
     expect_false(is_prepared(sql))
 })
 
