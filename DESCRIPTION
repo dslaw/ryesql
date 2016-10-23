@@ -1,0 +1,10 @@
+Package: ryesql
+Title: Implementation of Yesql
+Version: 0.0.1
+Author: David Law <davidsamuellaw@gmail.com>
+Description: An R package for using SQL based on Yesql.
+Imports:
+    stringr (>= 1.0.0)
+License: What license is it under?
+LazyData: true
+Suggests: testthat
