@@ -16,7 +16,7 @@ rm_pattern <- function(string, pattern) {
     stringr::str_replace(string, pattern, "")
 }
 
-blank_line <- function(string) {
+not_blank <- function(string) {
     stringr::str_detect(string, stringr::boundary("word"))
 }
 
@@ -25,7 +25,7 @@ blank_line <- function(string) {
 #' @param lines Character vector of SQL statements to split.
 #' @return queries List of queries.
 split_queries <- function(lines) {
-    trimmed <- Filter(blank_line, lines)
+    trimmed <- Filter(not_blank, lines)
     line_comment <- stringr::str_detect(trimmed, comment_)
     name <- stringr::str_detect(trimmed, name_tag)
     delim <- stringr::str_detect(trimmed, delimiter)
