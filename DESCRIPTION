@@ -5,6 +5,7 @@ Author: David Law <davidsamuellaw@gmail.com>
 Description: An R package for using SQL based on Yesql.
 Imports:
     stringr (>= 1.0.0)
+Suggests:
+    testthat
 License: What license is it under?
 LazyData: true
-Suggests: testthat
