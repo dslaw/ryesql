@@ -131,19 +131,14 @@ parse_named_query <- function(block) {
     rest <- tail(block, n = -1L)
 
     if (!is_name(first)) {
-        msg <- paste0("Query must have a ", name_tag, " tag in the first line")
+        msg <- paste0("Query must have a ", "'", name_tag, "'", " tag in the first line")
         syntax_error(msg)
-    }
-
-    # Perform cursory validation on SQL.
-    sql <- extract_sql(rest)
-    if (stringr::str_count(sql, delimiter) > 1L) {
-        syntax_error("Cannot process multiple statements in a single query")
     }
 
     query <- list()
     class(query) <- c("query", "named", class(query))
 
+    sql <- extract_sql(rest)
     query$name <- extract_name(first)
     query$type <- query_type(query$name)
     query$description <- extract_description(rest)
@@ -154,15 +149,10 @@ parse_named_query <- function(block) {
 
 #' Parse a docstring and sql block.
 parse_anon_query <- function(block) {
-    # Perform cursory validation on SQL.
-    sql <- extract_sql(block)
-    if (stringr::str_count(sql, delimiter) > 1L) {
-        syntax_error("Multiple statements detected")
-    }
-
     query <- list()
     class(query) <- c("query", class(query))
 
+    sql <- extract_sql(block)
     query$description <- extract_description(block)
     query$sql <- rm_pattern(sql, delimiter)
     query$prepared <- is_prepared(sql)

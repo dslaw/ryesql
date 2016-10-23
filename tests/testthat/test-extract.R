@@ -184,16 +184,6 @@ test_that("parse_named_query parses named-query", {
     expect_true(out$prepared)
 })
 
-test_that("parse_named_query throws for multiple statements", {
-    invalid <- c("-- name: add-event!",
-                 "INSERT INTO events",
-                 "VALUES (?, ?, ?);",
-                 "",
-                 "-- name: get-event",
-                 "SELECT * FROM events;")
-    expect_error(parse_named_query(invalid), "multiple statements")
-})
-
 test_that("parse_anon_query parses query", {
     txt <- c("-- Add an event.",
              "INSERT INTO events",
@@ -204,12 +194,5 @@ test_that("parse_anon_query parses query", {
     expect_equal(out$description, "Add an event.")
     expect_equal(out$sql, "INSERT INTO events\nVALUES (?, ?, ?)") # no semicolon
     expect_true(out$prepared)
-})
-
-test_that("parse_anon_query throws for multiple statements", {
-    invalid <- c("SELECT * FROM events;",
-                 "",
-                 "SELECT * FROM events WHERE id > 10;")
-    expect_error(parse_anon_query(invalid), "Multiple statements")
 })
 
