@@ -10,7 +10,7 @@ parse_anon_query(block)
 \item{block}{Character vector.}
 }
 \value{
-Query.
+List.
 }
 \description{
 Parse a docstring and sql block.

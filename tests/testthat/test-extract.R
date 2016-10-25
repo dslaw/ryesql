@@ -193,7 +193,7 @@ test_that("parse_named_query parses named-query", {
              "VALUES (?, ?, ?);")
     out <- parse_named_query(txt)
 
-    expect_equal(class(out), c("query", "named", "list"))
+    expect_is(out, "list")
     expect_equal(out$name, "add-event!")
     expect_equal(out$type, "modifies")
     expect_equal(out$description, "Add an event.")
@@ -207,7 +207,7 @@ test_that("parse_anon_query parses query", {
              "VALUES (?, ?, ?);")
     out <- parse_anon_query(txt)
 
-    expect_equal(class(out), c("query", "list"))
+    expect_is(out, "list")
     expect_equal(out$description, "Add an event.")
     expect_equal(out$sql, "INSERT INTO events\nVALUES (?, ?, ?)") # no semicolon
     expect_true(out$prepared)

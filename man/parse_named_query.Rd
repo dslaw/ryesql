@@ -10,7 +10,7 @@ parse_named_query(block)
 \item{block}{Character vector.}
 }
 \value{
-Named query.
+List.
 }
 \description{
 Parse a docstring with name and sql block.

@@ -132,7 +132,7 @@ is_prepared <- function(sql) {
 #' Parse a docstring with name and sql block.
 #'
 #' @param block Character vector.
-#' @return Named query.
+#' @return List.
 parse_named_query <- function(block) {
     first <- utils::head(block, n = 1L)
     rest <- utils::tail(block, n = -1L)
@@ -142,30 +142,25 @@ parse_named_query <- function(block) {
         syntax_error(msg)
     }
 
-    query <- list()
-    class(query) <- c("query", "named", class(query))
-
     sql <- extract_sql(rest)
-    query$name <- extract_name(first)
-    query$type <- query_type(query$name)
-    query$description <- extract_description(rest)
-    query$sql <- rm_pattern(sql, delimiter)
-    query$prepared <- is_prepared(sql)
-    query
+    name <- extract_name(first)
+
+    list(name = name,
+         type = query_type(name),
+         description = extract_description(rest),
+         sql = rm_pattern(sql, delimiter),
+         prepared = is_prepared(sql))
 }
 
 #' Parse a docstring and sql block.
 #'
 #' @param block Character vector.
-#' @return Query.
+#' @return List.
 parse_anon_query <- function(block) {
-    query <- list()
-    class(query) <- c("query", class(query))
-
     sql <- extract_sql(block)
-    query$description <- extract_description(block)
-    query$sql <- rm_pattern(sql, delimiter)
-    query$prepared <- is_prepared(sql)
-    query
+
+    list(description = extract_description(block),
+         sql = stringr::str_trim(rm_pattern(sql, delimiter)),
+         prepared = is_prepared(sql))
 }
 

@@ -1,14 +1,17 @@
 Package: ryesql
 Title: Implementation of Yesql
-Version: 0.0.1
+Version: 0.1.0
 Author: David Law <davidsamuellaw@gmail.com>
 Maintainer: David Law <davidsamuellaw@gmail.com>
 Description: An R package for using SQL based on Yesql.
+Depends:
+    R (>= 3.1.0)
 Imports:
     stringr (>= 1.0.0),
     utils
 Suggests:
-    testthat
+    testthat,
+    RSQLite (>= 1.0.0)
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
