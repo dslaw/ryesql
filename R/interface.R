@@ -1,12 +1,6 @@
-DBI_FN_MAP <- list(
-    reads = list(
-        params = "dbGetPreparedQuery",
-        none = "dbGetQuery"
-    ),
-    modifies = list(
-        params = "dbGetPreparedQuery",
-        none = "dbExecute"
-    )
+DBI_FN <- list(
+    params = "dbGetPreparedQuery",
+    none = "dbGetQuery"
 )
 
 #' Create a callable query object.
@@ -20,17 +14,11 @@ DBI_FN_MAP <- list(
 #' @param query List.
 #' @return Function.
 mk_callable <- function(query) {
-    if (!(query$type %in% names(DBI_FN_MAP))) {
-        warning(paste0("'", query$type, "'",
-                       " is not supported.\n",
-                       "Use `get_query` or `get_queries`."),
-                call. = FALSE)
-    }
-
     # Dynamically look up method defined by DBI.
     param <- if (query$prepared) "params" else "none"
-    fn_name <- DBI_FN_MAP[[query$type]][[param]]
+    fn_name <- DBI_FN[[param]]
     on.exit(rm(param, fn_name))
+
     fn <- match.fun(fn_name)
 
     callable <- function(conn, ...) {
@@ -209,7 +197,6 @@ load_query <- function(name, filename, env = parent.frame()) {
 
     # Set metadata as necessary for `mk_callable`.
     query_obj$name <- name
-    query_obj$type <- "modifies" # Default to the most general case.
     query <- mk_callable(query_obj)
 
     env[[name]] <- query
