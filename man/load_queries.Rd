@@ -17,6 +17,38 @@ Create query functions inside an environment. Multiple
 queries are added to the specified environment, identified
 by their names.
 }
+\examples{
+# A package implementing DBI methods must be available.
+require(RSQLite)
+
+cat("-- name: get-fruits",
+    "-- Get all fruits.",
+    "SELECT * FROM fruit;",
+    "-- name: green-fruits",
+    "-- Get green fruits.",
+    "SELECT * FROM fruit",
+    "WHERE color = 'green';",
+    file = "queries.sql",
+    sep = "\\n")
+
+# Load into global environment.
+load_queries("queries.sql")
+unlink("queries.sql")
+
+conn <- dbConnect(SQLite(), ":memory:")
+tbl <- data.frame(name = c("apple", "orange", "pineapple"),
+                  color = c("green", "orange", "yellow"))
+success <- dbWriteTable(conn, "fruit", tbl)
+
+`get-fruits`(conn)
+#       name   color
+# 1     apple  green
+# 2    orange orange
+# 3 pineapple yellow
+
+dbDisconnect(conn)
+
+}
 \seealso{
 get_queries
 }

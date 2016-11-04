@@ -16,14 +16,13 @@ Character string.
 Get the SQL stored in the query closure.
 }
 \examples{
-\dontrun{
 require(RSQLite)
 
-writeLines("SELECT DISTINCT color FROM fruits;", con = "query.sql")
+cat("SELECT DISTINCT color FROM fruits;", file = "query.sql")
 load_query("get_colors", "query.sql")
+unlink("query.sql")
 get_sql(get_colors)
 # [1] "SELECT DISTINCT color FROM fruits"
-}
 
 }
 

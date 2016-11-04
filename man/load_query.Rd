@@ -18,6 +18,31 @@ is the calling environment.}
 Create a query function inside an environment. The query
 is added to the specified environment as the given name.
 }
+\examples{
+# A package implementing DBI methods must be available. 
+require(RSQLite)
+cat("SELECT * FROM fruit",
+    "WHERE name LIKE '\%berry';",
+    file = "query.sql",
+    sep = "\\n")
+
+# Load into global environment.
+load_query("get_berries", "query.sql")
+unlink("query.sql")
+
+conn <- dbConnect(SQLite(), ":memory:")
+tbl <- data.frame(name = c("apple", "strawberry", "blackberry", "mango"),
+                  color = c("green", "red", "black", "orange"))
+success <- dbWriteTable(conn, "fruit", tbl)
+
+get_berries(conn)
+#         name color
+# 1 strawberry   red
+# 2 blackberry black
+
+dbDisconnect(conn)
+
+}
 \seealso{
 get_query
 }

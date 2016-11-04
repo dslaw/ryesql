@@ -57,6 +57,25 @@ mk_callable <- function(query) {
 #'
 #' @param filename Character string.
 #' @return List of named-queries.
+#'
+#' @examples
+#' cat("-- name: get-fruits",
+#'     "-- Get all fruits.",
+#'     "SELECT * FROM fruit;",
+#'     "-- name: green-fruits",
+#'     "-- Get green fruits.",
+#'     "SELECT * FROM fruit",
+#'     "WHERE color = 'green';",
+#'     file = "queries.sql",
+#'     sep = "\n")
+#' queries <- get_queries("queries.sql")
+#' unlink("queries.sql")
+#' 
+#' names(queries)
+#' # [1] "get-fruits"   "green-fruits"
+#' queries$`green-fruits`$sql
+#' # [1] "SELECT * FROM fruit\nWHERE color = 'green'"
+#'
 #' @export
 get_queries <- function(filename) {
     txt <- readLines(filename)
@@ -78,6 +97,17 @@ get_queries <- function(filename) {
 #'
 #' @param filename Character string.
 #' @return Named list.
+#' @examples
+#' cat("SELECT * FROM fruit",
+#'     "WHERE color = 'green';",
+#'     file = "query.sql",
+#'     sep = "\n")
+#' query <- get_query("query.sql")
+#' unlink("query.sql")
+#' 
+#' query$sql
+#' # [1] "SELECT * FROM fruit\nWHERE color = 'green'"
+#'
 #' @export
 get_query <- function(filename) {
     txt <- readLines(filename)
@@ -95,6 +125,37 @@ get_query <- function(filename) {
 #' is the calling environment.
 #' @return NULL
 #' @seealso get_queries
+#' @examples
+#' # A package implementing DBI methods must be available.
+#' require(RSQLite)
+#'
+#' cat("-- name: get-fruits",
+#'     "-- Get all fruits.",
+#'     "SELECT * FROM fruit;",
+#'     "-- name: green-fruits",
+#'     "-- Get green fruits.",
+#'     "SELECT * FROM fruit",
+#'     "WHERE color = 'green';",
+#'     file = "queries.sql",
+#'     sep = "\n")
+#'
+#' # Load into global environment.
+#' load_queries("queries.sql")
+#' unlink("queries.sql")
+#'
+#' conn <- dbConnect(SQLite(), ":memory:")
+#' tbl <- data.frame(name = c("apple", "orange", "pineapple"),
+#'                   color = c("green", "orange", "yellow"))
+#' success <- dbWriteTable(conn, "fruit", tbl)
+#' 
+#' `get-fruits`(conn)
+#' #       name   color
+#' # 1     apple  green
+#' # 2    orange orange
+#' # 3 pineapple yellow
+#'
+#' dbDisconnect(conn)
+#'
 #' @export
 load_queries <- function(filename, env = parent.frame()) {
     queries <- lapply(get_queries(filename), mk_callable)
@@ -118,6 +179,30 @@ load_queries <- function(filename, env = parent.frame()) {
 #' is the calling environment.
 #' @return NULL
 #' @seealso get_query
+#' @examples
+#' # A package implementing DBI methods must be available. 
+#' require(RSQLite)
+#' cat("SELECT * FROM fruit",
+#'     "WHERE name LIKE '%berry';",
+#'     file = "query.sql",
+#'     sep = "\n")
+#'
+#' # Load into global environment.
+#' load_query("get_berries", "query.sql")
+#' unlink("query.sql")
+#' 
+#' conn <- dbConnect(SQLite(), ":memory:")
+#' tbl <- data.frame(name = c("apple", "strawberry", "blackberry", "mango"),
+#'                   color = c("green", "red", "black", "orange"))
+#' success <- dbWriteTable(conn, "fruit", tbl)
+#' 
+#' get_berries(conn)
+#' #         name color
+#' # 1 strawberry   red
+#' # 2 blackberry black
+#' 
+#' dbDisconnect(conn)
+#'
 #' @export
 load_query <- function(name, filename, env = parent.frame()) {
     query_obj <- get_query(filename)
@@ -154,14 +239,13 @@ print.yesql <- function(x, ...) {
 #' @return Character string.
 #'
 #' @examples
-#' \dontrun{
 #' require(RSQLite)
 #'
-#' writeLines("SELECT DISTINCT color FROM fruits;", con = "query.sql")
+#' cat("SELECT DISTINCT color FROM fruits;", file = "query.sql")
 #' load_query("get_colors", "query.sql")
+#' unlink("query.sql")
 #' get_sql(get_colors)
 #' # [1] "SELECT DISTINCT color FROM fruits"
-#' }
 #'
 #' @export
 get_sql <- function(query) {

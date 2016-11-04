@@ -18,4 +18,23 @@ returned as a named list with a name, description and
 SQL string suitable for passing to a DBIConnection
 method.
 }
+\examples{
+cat("-- name: get-fruits",
+    "-- Get all fruits.",
+    "SELECT * FROM fruit;",
+    "-- name: green-fruits",
+    "-- Get green fruits.",
+    "SELECT * FROM fruit",
+    "WHERE color = 'green';",
+    file = "queries.sql",
+    sep = "\\n")
+queries <- get_queries("queries.sql")
+unlink("queries.sql")
+
+names(queries)
+# [1] "get-fruits"   "green-fruits"
+queries$`green-fruits`$sql
+# [1] "SELECT * FROM fruit\\nWHERE color = 'green'"
+
+}
 

@@ -22,4 +22,16 @@ method.
 The file should contain only a single query to be
 loaded.
 }
+\examples{
+cat("SELECT * FROM fruit",
+    "WHERE color = 'green';",
+    file = "query.sql",
+    sep = "\\n")
+query <- get_query("query.sql")
+unlink("query.sql")
+
+query$sql
+# [1] "SELECT * FROM fruit\\nWHERE color = 'green'"
+
+}
 
