@@ -17,12 +17,15 @@ mk_callable <- function(query) {
     # Dynamically look up method defined by DBI.
     param <- if (query$prepared) "params" else "none"
     fn_name <- DBI_FN[[param]]
-    on.exit(rm(param, fn_name))
 
+    # Don't hold onto necessary data in the closure.
+    on.exit(rm(param, fn_name, query))
+
+    sql <- query$sql
     fn <- match.fun(fn_name)
 
     callable <- function(conn, ...) {
-        fn(conn = conn, statement = query$sql, ...)
+        fn(conn = conn, statement = sql, ...)
     }
 
     # Set metadata on inner function.
