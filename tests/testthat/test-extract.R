@@ -10,25 +10,25 @@ test_that("split_queries splits named-queries", {
         "-- Queries for foo.",
         "SELECT foo",
         "FROM tbl",
-        "GROUP BY bar;",
+        "GROUP BY bar",
         "",
         "-- name: update!",
         "-- Updates foo.",
         "UPDATE tbl",
         "SET foo=1",
-        "WHERE bar < 10;",
+        "WHERE bar < 10",
         "")
     expected <- list(
         c("-- name: my-query",
           "-- Queries for foo.",
           "SELECT foo",
           "FROM tbl",
-          "GROUP BY bar;"),
+          "GROUP BY bar"),
         c("-- name: update!",
           "-- Updates foo.",
           "UPDATE tbl",
           "SET foo=1",
-          "WHERE bar < 10;"))
+          "WHERE bar < 10"))
 
     queries <- split_queries(txt)
     expect_equal(queries, expected)
@@ -41,7 +41,7 @@ test_that("split_queries throws for invalid queries", {
              "-- name: get-ids",
              "-- Gets ids.",
              "SELECT id",
-             "FROM tbl;")
+             "FROM tbl")
     expect_error(split_queries(txt), "Invalid syntax")
 })
 
@@ -103,7 +103,7 @@ test_that("extract_description gets description", {
              "--   bar : filter by",
              "SELECT foo",
              "FROM tbl",
-             "WHERE id = :bar;")
+             "WHERE id = :bar")
     expected <- c("Gets the foos.",
                   "  bar : filter by")
     expect_equal(extract_description(txt), expected)
@@ -111,7 +111,7 @@ test_that("extract_description gets description", {
     # No description.
     txt <- c("SELECT foo",
              "FROM tbl",
-             "WHERE id = :bar;")
+             "WHERE id = :bar")
     expect_equal(extract_description(txt), NA)
 })
 
@@ -120,8 +120,8 @@ test_that("extract_sql gets sql", {
              "--   bar : filter by",
              "SELECT foo",
              "FROM tbl",
-             "WHERE id = :bar;")
-    expected <- "SELECT foo\nFROM tbl\nWHERE id = :bar;"
+             "WHERE id = :bar")
+    expected <- "SELECT foo\nFROM tbl\nWHERE id = :bar"
     expect_equal(extract_sql(txt), expected)
 })
 
@@ -137,28 +137,28 @@ test_that("is_prepared identifies parameterized queries", {
     # Named parameter.
     sql <- c("SELECT *",
              "FROM tbl",
-             "WHERE id > :i;")
+             "WHERE id > :i")
     sql <- paste0(sql, collapse = "\n")
     expect_true(is_prepared(sql))
 
     # Snake case.
     sql <- c("SELECT *",
              "FROM tbl",
-             "WHERE id > :foo_bar;")
+             "WHERE id > :foo_bar")
     sql <- paste0(sql, collapse = "\n")
     expect_true(is_prepared(sql))
 
     # Anonymous parameter/placeholder.
     sql <- c("SELECT *",
              "FROM tbl",
-             "WHERE id > ?;")
+             "WHERE id > ?")
     sql <- paste0(sql, collapse = "\n")
     expect_true(is_prepared(sql))
 
     # No parameter.
     sql <- c("SELECT *",
              "FROM tbl",
-             "WHERE id > 4;")
+             "WHERE id > 4")
     sql <- paste0(sql, collapse = "\n")
     expect_false(is_prepared(sql))
 
@@ -166,13 +166,13 @@ test_that("is_prepared identifies parameterized queries", {
     sql <- c("SELECT *",
              "FROM tbl",
              "-- should use placeholder eg ?",
-             "WHERE id > 10;")
+             "WHERE id > 10")
     sql <- paste0(sql, collapse = "\n")
     expect_false(is_prepared(sql))
 
     sql <- c("SELECT *",
              "FROM tbl",
-             "WHERE id > 10; /* ignore :i */")
+             "WHERE id > 10 /* ignore :i */")
     sql <- paste0(sql, collapse = "\n")
     expect_false(is_prepared(sql))
 
@@ -181,7 +181,7 @@ test_that("is_prepared identifies parameterized queries", {
              "/* date:",
              " * why is this 10?",
              " */",
-             "WHERE id > 10;")
+             "WHERE id > 10")
     sql <- paste0(sql, collapse = "\n")
     expect_false(is_prepared(sql))
 })
@@ -190,7 +190,7 @@ test_that("parse_named_query parses named-query", {
     txt <- c("-- name: add-event!",
              "-- Add an event.",
              "INSERT INTO events",
-             "VALUES (?, ?, ?);")
+             "VALUES (?, ?, ?)")
     out <- parse_named_query(txt)
 
     expect_is(out, "list")
@@ -204,7 +204,7 @@ test_that("parse_named_query parses named-query", {
 test_that("parse_anon_query parses query", {
     txt <- c("-- Add an event.",
              "INSERT INTO events",
-             "VALUES (?, ?, ?);")
+             "VALUES (?, ?, ?)")
     out <- parse_anon_query(txt)
 
     expect_is(out, "list")

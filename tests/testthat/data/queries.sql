@@ -2,18 +2,17 @@
 
 -- name: get-fruits
 SELECT name
-FROM fruits;
+FROM fruits
 
 -- name: add-fruit!
 -- Add a fruit.
 --   fruit : the fruit name.
 --   color : the fruit color.
 INSERT INTO fruits (name, color)
-VALUES (:fruit, :color);
+VALUES (:fruit, :color)
 
 -- name: update-orange!
 -- Change the color of oranges.
 UPDATE fruits
 SET color = ?
-WHERE name = 'orange';
-
+WHERE name = 'orange'
