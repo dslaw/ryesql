@@ -34,6 +34,37 @@ test_that("split_queries splits named-queries", {
     expect_equal(queries, expected)
 })
 
+test_that("split_queries handles multiple newlines", {
+    txt <- c(
+        "-- name: my-query",
+        "-- Queries for foo.",
+        "SELECT foo",
+        "FROM tbl",
+        "GROUP BY bar",
+        "",
+        "",
+        "-- name: update!",
+        "-- Updates foo.",
+        "UPDATE tbl",
+        "SET foo=1",
+        "WHERE bar < 10"
+    )
+    expected <- list(
+        c("-- name: my-query",
+          "-- Queries for foo.",
+          "SELECT foo",
+          "FROM tbl",
+          "GROUP BY bar"),
+        c("-- name: update!",
+          "-- Updates foo.",
+          "UPDATE tbl",
+          "SET foo=1",
+          "WHERE bar < 10"))
+
+    queries <- split_queries(txt)
+    expect_equal(queries, expected)
+})
+
 test_that("split_queries throws for invalid queries", {
     txt <- c("-- name: get-foos",
              "-- Gets the foos.",
