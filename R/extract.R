@@ -16,8 +16,13 @@ rm_pattern <- function(string, pattern) {
     stringr::str_replace(string, pattern, "")
 }
 
-not_blank <- function(string) {
-    stringr::str_detect(string, stringr::boundary("word"))
+str_empty <- function(string) {
+    stringr::str_length(string) == 0
+}
+
+has_uncommented_lines <- function(query) {
+    line_comments <- stringr::str_detect(query, comment_)
+    !all(line_comments)
 }
 
 #' Split slurped SQL into named-queries.
@@ -25,24 +30,21 @@ not_blank <- function(string) {
 #' @param lines Character vector of SQL statements to split.
 #' @return queries List of queries.
 split_queries <- function(lines) {
-    trimmed <- Filter(not_blank, lines)
-    line_comment <- stringr::str_detect(trimmed, comment_)
-    name <- stringr::str_detect(trimmed, name_tag)
-    delim <- stringr::str_detect(trimmed, delimiter)
+    collapsed <- paste0(lines, collapse = "\n")
+    query_lines <- stringr::str_split(collapsed, stringr::fixed("\n\n"))[[1]]
 
-    begin_indexes <- which(line_comment & name)
-    end_indexes <- which(!line_comment & delim)
+    named <- stringr::str_detect(query_lines, name_tag)
+    named_query_lines <- query_lines[named]
+    queries <- stringr::str_split(named_query_lines, stringr::fixed("\n"))
+    trimmed <- lapply(queries, function(query) query[!str_empty(query)])
 
-    # Check every name has a query.
-    if (length(begin_indexes) != length(end_indexes) ||
-        any((end_indexes - begin_indexes) < 1L)) {
+    # Check that each query has SQL associated with it.
+    has_sql <- vapply(trimmed, has_uncommented_lines, logical(1))
+    if (!all(has_sql)) {
         syntax_error()
     }
 
-    mapply(function(i, j) trimmed[i:j],
-           begin_indexes,
-           end_indexes,
-           SIMPLIFY = FALSE)
+    trimmed
 }
 
 #' Check if the line contains a query name.
