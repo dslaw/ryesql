@@ -52,11 +52,12 @@ mk_callable <- function(query) {
 #' @examples
 #' cat("-- name: get-fruits",
 #'     "-- Get all fruits.",
-#'     "SELECT * FROM fruit;",
+#'     "SELECT * FROM fruit",
+#'     "",
 #'     "-- name: green-fruits",
 #'     "-- Get green fruits.",
 #'     "SELECT * FROM fruit",
-#'     "WHERE color = 'green';",
+#'     "WHERE color = 'green'",
 #'     file = "queries.sql",
 #'     sep = "\n")
 #' queries <- get_queries("queries.sql")
@@ -90,7 +91,7 @@ get_queries <- function(filename) {
 #' @return Named list.
 #' @examples
 #' cat("SELECT * FROM fruit",
-#'     "WHERE color = 'green';",
+#'     "WHERE color = 'green'",
 #'     file = "query.sql",
 #'     sep = "\n")
 #' query <- get_query("query.sql")
@@ -122,11 +123,12 @@ get_query <- function(filename) {
 #'
 #' cat("-- name: get-fruits",
 #'     "-- Get all fruits.",
-#'     "SELECT * FROM fruit;",
+#'     "SELECT * FROM fruit",
+#'     "",
 #'     "-- name: green-fruits",
 #'     "-- Get green fruits.",
 #'     "SELECT * FROM fruit",
-#'     "WHERE color = 'green';",
+#'     "WHERE color = 'green'",
 #'     file = "queries.sql",
 #'     sep = "\n")
 #'
@@ -174,7 +176,7 @@ load_queries <- function(filename, env = parent.frame()) {
 #' # A package implementing DBI methods must be available. 
 #' require(RSQLite)
 #' cat("SELECT * FROM fruit",
-#'     "WHERE name LIKE '%berry';",
+#'     "WHERE name LIKE '%berry'",
 #'     file = "query.sql",
 #'     sep = "\n")
 #'
@@ -231,7 +233,7 @@ print.yesql <- function(x, ...) {
 #' @examples
 #' require(RSQLite)
 #'
-#' cat("SELECT DISTINCT color FROM fruits;", file = "query.sql")
+#' cat("SELECT DISTINCT color FROM fruits", file = "query.sql")
 #' load_query("get_colors", "query.sql")
 #' unlink("query.sql")
 #' get_sql(get_colors)
