@@ -22,7 +22,7 @@ is added to the specified environment as the given name.
 # A package implementing DBI methods must be available. 
 require(RSQLite)
 cat("SELECT * FROM fruit",
-    "WHERE name LIKE '\%berry';",
+    "WHERE name LIKE '\%berry'",
     file = "query.sql",
     sep = "\\n")
 

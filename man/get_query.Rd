@@ -24,7 +24,7 @@ loaded.
 }
 \examples{
 cat("SELECT * FROM fruit",
-    "WHERE color = 'green';",
+    "WHERE color = 'green'",
     file = "query.sql",
     sep = "\\n")
 query <- get_query("query.sql")

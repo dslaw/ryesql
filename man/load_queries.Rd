@@ -23,11 +23,12 @@ require(RSQLite)
 
 cat("-- name: get-fruits",
     "-- Get all fruits.",
-    "SELECT * FROM fruit;",
+    "SELECT * FROM fruit",
+    "",
     "-- name: green-fruits",
     "-- Get green fruits.",
     "SELECT * FROM fruit",
-    "WHERE color = 'green';",
+    "WHERE color = 'green'",
     file = "queries.sql",
     sep = "\\n")
 
